@@ -1,26 +1,10 @@
-import type { SacramentMeeting } from '@/lib/types';
+import { getMeetings } from '@/lib/meetings-db';
 import MeetingCard from '@/components/MeetingCard';
-import { connection } from 'next/server';
 
 export const instant = false;
 
-async function getMeetings(): Promise<SacramentMeeting[]> {
-    const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BASE_URL ?? 'http://localhost:3000'}/api/meetings`,
-        { cache: 'no-store' }
-    );
-
-    if (!response.ok) {
-        throw new Error('Failed to fetch meetings');
-    }
-
-    return response.json() as Promise<SacramentMeeting[]>;
-}
-
-export default async function MeetingsPage() {
-    await connection();
-
-    const meetings = await getMeetings();
+export default function MeetingsPage() {
+    const meetings = getMeetings();
 
     return (
         <section>

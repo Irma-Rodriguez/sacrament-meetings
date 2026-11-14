@@ -1,10 +1,31 @@
-import { getMeetings } from '@/lib/meetings-db';
 import MeetingCard from '@/components/MeetingCard';
+import type { SacramentMeeting } from '@/lib/types';
+import { headers } from 'next/headers';
 
-export const instant = false;
+export default async function MeetingsPage() {
+    const headersList = await headers();
 
-export default function MeetingsPage() {
-    const meetings = getMeetings();
+    const host =
+        headersList.get('x-forwarded-host') ??
+        headersList.get('host');
+
+    const protocol =
+        headersList.get('x-forwarded-proto') ?? 'http';
+
+    if (!host) {
+        throw new Error('Unable to determine application host');
+    }
+
+    const response = await fetch(
+        `${protocol}://${host}/api/meetings`,
+        { cache: 'no-store' }
+    );
+
+    if (!response.ok) {
+        throw new Error('Failed to fetch meetings');
+    }
+
+    const meetings: SacramentMeeting[] = await response.json();
 
     return (
         <section>

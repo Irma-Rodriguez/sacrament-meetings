@@ -4,7 +4,7 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const date = searchParams.get('date');
 
-    const meetings = await getMeetings(date);
+    const meetings = await getMeetings('', 1, date);
 
     return Response.json(meetings);
 }

@@ -5,21 +5,38 @@ import { connection } from 'next/server';
 export const instant = false;
 
 export default async function CurrentMeetingPage() {
-    // Wait for the request before accessing the current date
     await connection();
 
-    const today = new Date();
+    // Get today's date in Colombia
+    const dateParts = new Intl.DateTimeFormat('en-CA', {
+        timeZone: 'America/Bogota',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+    }).formatToParts(new Date());
 
-    const dayOfWeek = today.getDay();
+    const year = Number(
+        dateParts.find(part => part.type === 'year')?.value
+    );
+
+    const month = Number(
+        dateParts.find(part => part.type === 'month')?.value
+    );
+
+    const day = Number(
+        dateParts.find(part => part.type === 'day')?.value
+    );
+
+    const today = new Date(Date.UTC(year, month - 1, day));
+
+    // Find the upcoming Sunday (or today if it is Sunday)
+    const dayOfWeek = today.getUTCDay();
+    const daysUntilSunday = (7 - dayOfWeek) % 7;
 
     const sunday = new Date(today);
-    sunday.setDate(today.getDate() - dayOfWeek);
+    sunday.setUTCDate(today.getUTCDate() + daysUntilSunday);
 
-    const sundayDate = [
-        sunday.getFullYear(),
-        String(sunday.getMonth() + 1).padStart(2, '0'),
-        String(sunday.getDate()).padStart(2, '0'),
-    ].join('-');
+    const sundayDate = sunday.toISOString().slice(0, 10);
 
     const meeting = await getMeetingByDate(sundayDate);
 
@@ -28,5 +45,4 @@ export default async function CurrentMeetingPage() {
     }
 
     redirect(`/meetings/${meeting.id}?from=current`);
-
 }

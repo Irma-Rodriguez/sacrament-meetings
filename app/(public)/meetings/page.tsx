@@ -2,6 +2,7 @@ import { getMeetings, getMeetingsTotalPages } from '@/lib/meetings-db';
 import MeetingCard from '@/components/MeetingCard';
 import MeetingSearch from '@/components/MeetingSearch';
 import Pagination from '@/components/Pagination';
+import Link from 'next/link';
 
 interface MeetingsPageProps {
     searchParams: Promise<{
@@ -42,6 +43,16 @@ export default async function MeetingsPage({
             </div>
 
             <MeetingSearch />
+
+            <div className="my-6 flex">
+                <Link
+                    href="/meetings/new"
+                    className="inline-flex items-center gap-2 rounded-lg bg-blue-900 px-5 py-3 font-semibold text-white hover:bg-blue-800 transition"
+                >
+                    <span aria-hidden="true">+</span>
+                    Create New Meeting
+                </Link>
+            </div>
 
             {meetings.length === 0 ? (
                 <p className="text-gray-600 py-8">

@@ -15,10 +15,15 @@ export default function HomePage() {
             Welcome to our Sacrament Meeting Planner. Find meeting schedules, announcements, hymns and speakers.
           </p>
 
-          <Link href="/meetings" className="inline-block mt-6 bg-blue-900 text-white px-6 py-3 rounded-lg hover:bg-blue-800">
-            View Meetings
-          </Link>
+          <div className="flex flex-wrap gap-4 mt-6">
+            <Link
+              href="/meetings"
+              className="inline-block bg-blue-900 text-white px-6 py-3 rounded-lg hover:bg-blue-800"
+            >
+              View Meetings
+            </Link>
 
+          </div>
         </div>
 
         <div>

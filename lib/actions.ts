@@ -1,5 +1,5 @@
 'use server';
-
+import { auth } from '@/auth';
 import { z } from 'zod';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
@@ -81,6 +81,14 @@ const MeetingFormSchema = z.object({
     closingPrayer: z.string().trim()
         .min(1, 'Closing prayer is required.'),
 });
+
+async function requireAdmin() {
+    const session = await auth();
+
+    if (!session?.user) {
+        redirect('/login');
+    }
+}
 
 export type MeetingFormState = {
     message?: string;
@@ -172,6 +180,7 @@ export async function createMeeting(
     _prevState: MeetingFormState,
     formData: FormData
 ): Promise<MeetingFormState> {
+    await requireAdmin();
     const formValues = getFormData(formData);
 
     const validatedFields = MeetingFormSchema.safeParse(formValues);
@@ -219,6 +228,8 @@ export async function updateMeeting(
     _prevState: MeetingFormState,
     formData: FormData
 ): Promise<MeetingFormState> {
+    await requireAdmin();
+
     const formValues = getFormData(formData);
 
     const validatedFields = MeetingFormSchema.safeParse(formValues);
@@ -272,6 +283,7 @@ export async function deleteMeeting(
     id: number,
     _formData: FormData
 ): Promise<void> {
+    await requireAdmin();
     void _formData;
     try {
         const deleted = await deleteMeetingFromDb(id);

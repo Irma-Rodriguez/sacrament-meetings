@@ -4,6 +4,7 @@ import './globals.css';
 
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import Providers from '@/components/Providers';
 
 const lato = Lato({
   subsets: ['latin'],
@@ -12,8 +13,15 @@ const lato = Lato({
 });
 
 export const metadata: Metadata = {
-  title: 'Tunja Ward | Sacrament Meeting Planner',
-  description: 'Sacrament meeting programs and schedules for Tunja Ward.',
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+  ),
+  title: {
+    default: 'Tunja Ward | Sacrament Meeting Planner',
+    template: '%s | Tunja Ward',
+  },
+  description:
+    'Sacrament meeting programs and schedules for Tunja Ward.',
 };
 
 export default function RootLayout({
@@ -24,13 +32,15 @@ export default function RootLayout({
   return (
     <html lang="en" data-scroll-behavior="smooth">
       <body className={`${lato.className} min-h-screen flex flex-col`}>
-        <Header />
+        <Providers>
+          <Header />
 
-        <main className="flex-grow">
-          {children}
-        </main>
+          <main className="flex-grow">
+            {children}
+          </main>
 
-        <Footer />
+          <Footer />
+        </Providers>
       </body>
     </html>
   );

@@ -2,12 +2,16 @@ import type { SacramentMeeting } from '@/lib/types';
 import PrintButton from './PrintButton';
 import Link from 'next/link';
 import { deleteMeeting } from '@/lib/actions';
+import { auth } from '@/auth';
 
 interface MeetingDetailProps {
     meeting: SacramentMeeting;
 }
 
-export default function MeetingDetail({ meeting }: MeetingDetailProps) {
+export default async function MeetingDetail({ meeting }: MeetingDetailProps) {
+    const session = await auth();
+    const isAdmin = !!session?.user;
+
     return (
         <article className="max-w-4xl mx-auto bg-white p-8 rounded-xl shadow-md">
 
@@ -121,21 +125,26 @@ export default function MeetingDetail({ meeting }: MeetingDetailProps) {
             </section>
 
             <div className="mt-8 flex flex-wrap justify-center gap-4 print:hidden">
-                <Link
-                    href={`/meetings/${meeting.id}/edit`}
-                    className="rounded-lg bg-blue-900 px-6 py-3 font-semibold text-white hover:bg-blue-800"
-                >
-                    Edit Meeting
-                </Link>
 
-                <form action={deleteMeeting.bind(null, meeting.id)}>
-                    <button
-                        type="submit"
-                        className="rounded-lg bg-red-700 px-6 py-3 font-semibold text-white hover:bg-red-800"
-                    >
-                        Delete Meeting
-                    </button>
-                </form>
+                {isAdmin && (
+                    <>
+                        <Link
+                            href={`/meetings/${meeting.id}/edit`}
+                            className="rounded-lg bg-blue-900 px-6 py-3 font-semibold text-white hover:bg-blue-800"
+                        >
+                            Edit Meeting
+                        </Link>
+
+                        <form action={deleteMeeting.bind(null, meeting.id)}>
+                            <button
+                                type="submit"
+                                className="rounded-lg bg-red-700 px-6 py-3 font-semibold text-white hover:bg-red-800"
+                            >
+                                Delete Meeting
+                            </button>
+                        </form>
+                    </>
+                )}
 
                 <PrintButton />
             </div>
